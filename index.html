@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JEE DASTER</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    h1, h2, h3, h4 {
+      font-family: 'Playfair Display', serif;
+    }
+    .modal {
+      display: none;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .animate-bounce {
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0); 
+      }
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+  </style>
+</head>
+<body class="bg-pink-50 font-sans">
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <img src="logo/logo.png" alt="Logo JEE DASTER" class="w-20 h-20">
+      <h1 class="text-2xl font-bold text-pink-600">JEE DASTER</h1>
+    </div>
+    <nav class="flex items-center space-x-4">
+      <a href="#katalog" class="text-pink-600 hover:underline">Katalog</a>
+      <a href="#reseller" class="text-pink-600 hover:underline">Reseller</a>
+      <a href="#lokasi" class="text-pink-600 hover:underline">Lokasi</a>
+      <a href="#video" class="text-pink-600 hover:underline">Video</a>
+      <button id="cartButton" class="relative text-pink-600">
+        🛒<span id="cart-count" class="absolute -top-2 -right-3 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">0</span>
+      </button>
+    </nav>
+  </header>
+  <!-- Modal Keranjang -->
+  <div id="cartModal" class="modal fixed inset-0 z-50 bg-black bg-opacity-50 justify-center items-center">
+    <div class="bg-white p-6 rounded-xl w-11/12 max-w-md relative">
+      <button onclick="document.getElementById('cartModal').classList.remove('active')" class="absolute top-2 right-2 text-gray-500 hover:text-pink-500">✕</button>
+      <h4 class="text-lg font-bold text-pink-700 mb-4">Keranjang Belanja</h4>
+      <ul id="cart-items" class="space-y-2 text-sm text-gray-700 max-h-60 overflow-y-auto"></ul>
+      <button onclick="checkout()" class="mt-4 bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600">Checkout</button>
+    </div>
+  </div>
+
+  <!-- Hero Banner -->
+  <section class="flex flex-col md:flex-row items-center justify-between px-6 py-10 bg-gradient-to-r from-pink-100 via-pink-50 to-pink-100">
+  <div class="text-center md:text-left md:w-1/2">
+    <h2 class="text-3xl font-semibold text-pink-700">Hai, kamu nyasar ke tempat yang bener!</h2>
+    <p class="mt-2 text-pink-600">JEE DASTER siap menemani hari-harimu yang (kadang) drama, (sering) mager, tapi selalu stylish!</p>
+    <a href="#katalog" class="mt-4 inline-block bg-pink-500 text-white px-6 py-3 rounded-full text-sm hover:bg-pink-600 shadow-md">
+      Lihat Koleksi Daster
+    </a>
+  </div>
+  <img src="ccprod/hb.png" alt="Daster Cantik" class="mt-6 md:mt-0 md:w-1/3 rounded-xl shadow-md">
+</section>
+
+
+  <!-- Katalog Produk -->
+  <section id="katalog" class="p-6">
+    <h3 class="text-xl font-semibold text-pink-700 mb-4">Katalog Produk</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" id="product-grid"></div>
+  </section>
+
+  <!-- Modal Produk -->
+  <div id="modal" class="modal fixed inset-0 z-50 bg-black bg-opacity-50 justify-center items-center">
+    <div class="bg-white p-6 rounded-xl max-w-md w-full relative">
+      <button id="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-pink-500">✕</button>
+      <button id="addToCartBtn" class="mt-3 bg-yellow-400 text-white px-4 py-2 rounded-full text-sm hover:bg-yellow-500 shadow-md">
+  Tambah ke Keranjang
+</button>
+
+      <div class="swiper mySwiper mb-4">
+        <div class="swiper-wrapper" id="swiper-wrapper"></div>
+        <div class="swiper-pagination"></div>
+      </div>
+      <h4 id="modal-title" class="text-lg font-bold text-pink-700"></h4>
+      <p id="modal-desc" class="text-sm text-gray-600 mb-2"></p>
+      <a id="modal-link" href="#" target="_blank" class="mt-2 inline-block bg-pink-500 text-white px-4 py-2 rounded-full text-sm hover:bg-pink-600 shadow-md">
+        Gas YUK!!! Sebelum Mamakmu yang CO
+      </a>
+    </div>
+  </div>
+
+  <section id="video" class="p-6 bg-pink-100">
+  <h3 class="text-2xl font-bold text-pink-700 text-center mb-6">🎥 Behind The Scene</h3>
+
+  <div class="max-w-xl mx-auto bg-white rounded-3xl shadow-lg p-0 overflow-hidden relative hover:shadow-2xl transition">
+    <div class="relative group">
+      <video
+        class="w-full rounded-xl group-hover:scale-105 transition duration-500"
+        src="video/bhc.mp4"
+        autoplay
+        muted
+        loop
+        controls
+        playsinline
+      ></video>
+
+      <!-- Optional overlay -->
+      <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent text-white p-4">
+        <h4 class="text-lg font-semibold">Jee Daster Studio 💃</h4>
+        <p class="text-sm">Lihat keseruan pemotretan produk cantik kami</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6 text-center">
+    <h4 class="text-xl font-semibold text-pink-700 animate-bounce">Keseruan di Balik Layar 🎬</h4>
+    <p class="text-sm text-gray-600 mt-1">Lihat bagaimana proses seru pemotretan daster-daster kece kami!</p>
+
+    <a href="https://shopee.co.id/jee.daster"
+       target="_blank"
+       class="mt-4 inline-block bg-gradient-to-r from-pink-400 to-pink-600 text-white px-6 py-3 rounded-full shadow-md hover:scale-105 transition transform duration-300">
+      🚀 Yuk Buruan Gasss!!! Sebelum Mamamu yang CO duluan
+    </a>
+  </div>
+</section>
+
+
+
+  <!-- Reseller Area -->
+  <section id="reseller" class="bg-white p-6 mt-10">
+    <h3 class="text-xl font-semibold text-pink-700 mb-4">Gabung Jadi Reseller</h3>
+    <p class="text-gray-700 mb-4">Dapatkan harga spesial dan bonus menarik untuk kamu yang ingin jadi reseller JEE DASTER!</p>
+    <a href="https://wa.me/6285559162225" target="_blank" class="bg-green-500 text-white px-6 py-3 rounded-full text-sm hover:bg-green-600 shadow-md">
+      Mulai Usaha Bareng JEE DASTER
+    </a>
+  </section>
+
+  <!-- Lokasi Toko -->
+  <section id="lokasi" class="bg-pink-100 p-6 mt-10 text-center">
+    <h3 class="text-xl font-semibold text-pink-700 mb-4">Lokasi Toko Kami</h3>
+    <p class="text-gray-700 mb-4">Kunjungi kami di lokasi berikut untuk melihat langsung koleksi daster cantik kami:</p>
+    <div class="w-full h-64 rounded-xl overflow-hidden shadow-md">
+      <iframe class="w-full h-full" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15842.032016600708!2d107.32575475!3d-6.94924385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68f781bf8162f9%3A0x401354723c373974!2sGina%20Barokah%20Fashion!5e0!3m2!1sid!2sid!4v1750568612234!5m2!1sid!2sid" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-pink-100 text-center text-sm text-pink-600 py-4 mt-10">
+    &copy; 2025 JEE DASTER. All rights reserved.
+  </footer>
+
+  <script>
+    const products = [
+      {
+        name: 'Daster Lowo Batik',
+        price: 'Rp 60.000',
+        desc: 'Daster Lowo Batik yang terbuat dari bahan rayon yang biasa dipakai baju bali, dengan LD 130cm dan tinggi 125cm membuat daster ini sangat leluasa dan nyaman di pakai.',
+        images: [
+          'gambar/foto-daster-kalong-1.png',
+          'gambar/foto-slide-2.png',
+          'gambar/foto-slide-3.png',
+          'gambar/foto-slide-4.png'
+        ],
+        wa: 'jee.daster'
+      },
+      {
+        name: 'Daster Butejo',
+        price: 'Rp 60.000',
+        desc: 'Daster VIRAL yang dipake banyak artis',
+        images: [
+          'gambar/foto-daster-kalong-2.png',
+          'gambar/foto-daster-kalong-3.png',
+          'gambar/slide-butejo-2.png',
+          'gambar/slide-butejo-3.png',
+          'gambar/slide-butejo-4.png'
+        ],
+        wa: 'jee.daster'
+      },
+      {
+        name: 'Daster Busui Kerah V',
+        price: 'Rp 60.000',
+        desc: 'Dasteer disini juga Bumil dan Busui friendly ya bund, bisa menyusui sambil bergaya juga',
+        images: [
+          'gambar/lili-1.jpg',
+          'gambar/lily-2.jpg',
+          'gambar/lily-3.jpg'
+        ],
+        wa: 'jee.daster'
+      },
+      {name: 'Daster Remaja Kerah V Full Kancing ',
+        price: 'Rp 60.000',
+        desc: 'Untuk kalian para remaja yang mager tapi masih cantiik, cocok banget ni, dengan LD :120cm dan tinggi 115cm membuat daster ini cocok banget buat kalian.',
+        images: [
+          'gambar/ted-1.jpg',
+          'gambar/ted-1.jpg',
+          'gambar/ted-2.png'
+        ],
+        wa: 'jee.daster'
+      },
+      {name: 'Daster Remaja Kerah V Fellicia Edition ',
+        price: 'Rp 60.000',
+        desc: 'Untuk kalian para remaja yang mager tapi masih cantiik, cocok banget ni, dengan LD :120cm dan tinggi 115cm membuat daster ini cocok banget buat kalian.',
+        images: [
+          'gambar/feli-1.jpg',
+          'gambar/feli-2.jpg',
+          'gambar/feli-3.jpg',
+          'gambar/feli-4.jpg',
+          'gambar/feli-5.jpg'
+        ],
+        wa: 'jee.daster'
+      },
+      {name: 'Daster Kerah V Esmeralda Edition ',
+        price: 'Rp 60.000',
+        desc: 'Untuk kalian para remaja yang mager tapi masih cantiik, cocok banget ni, dengan LD :120cm dan tinggi 115cm membuat daster ini cocok banget buat kalian.',
+        images: [
+          'gambar/esme-1.jpg',
+          'gambar/esme-2.jpg'
+        ],
+        wa: 'jee.daster'},
+        {name: 'Daster Kimono Mawar Edition',
+        price: 'Rp 65.000',
+        desc: 'Ini dia daster teerbaru kami "DASTER KIMONO" dengan LD:125cm Dan Tinggi 130cm membuat daster ini terlihat cantik dan anggun.',
+        images: [
+          'ccprod/kimo-1.png',
+          'ccprod/kimo-2.png'
+        ],
+        wa: 'jee.daster'},
+        {name: 'Daster Kimono Lily Edition',
+        price: 'Rp 65.000',
+        desc: 'Ini dia daster teerbaru kami "DASTER KIMONO" dengan LD:125cm Dan Tinggi 130cm membuat daster ini terlihat cantik dan anggun.',
+        images: [
+          'ccprod/kimo-3.png',
+          'ccprod/kimo-4.png',
+          'ccprod/kimo-6.png'
+        ],
+        wa: 'jee.daster'}
+    ];
+  
+
+
+
+
+    const grid = document.getElementById('product-grid');
+    const modal = document.getElementById('modal');
+    const swiperWrapper = document.getElementById('swiper-wrapper');
+    const modalTitle = document.getElementById('modal-title');
+    const modalDesc = document.getElementById('modal-desc');
+    const modalLink = document.getElementById('modal-link');
+    let swiper;
+
+    products.forEach((product, index) => {
+      const card = document.createElement('div');
+      card.className = 'bg-white p-4 rounded-2xl shadow-md hover:shadow-2xl transition cursor-pointer';
+      card.innerHTML = `
+        <img src="${product.images[0]}" alt="${product.name}" class="rounded-lg mb-2">
+        <h4 class="text-lg font-bold text-pink-700">${product.name}</h4>
+        <p class="text-sm text-gray-600">${product.price}</p>
+      `;
+      card.addEventListener('click', () => {
+        swiperWrapper.innerHTML = '';
+        product.images.forEach(img => {
+          const slide = document.createElement('div');
+          slide.className = 'swiper-slide';
+          slide.innerHTML = `<img src="${img}" class="rounded-lg" />`;
+          swiperWrapper.appendChild(slide);
+        });
+        modalTitle.textContent = product.name;
+        modalDesc.textContent = product.desc;
+        modalLink.href = `https://shopee.co.id/${product.wa}`;
+        modal.classList.add('active');
+        if (swiper) swiper.destroy(true, true);
+        swiper = new Swiper('.mySwiper', {
+          pagination: { el: '.swiper-pagination' }
+        });
+        swiper = new Swiper('.mySwiper', {
+  pagination: { el: '.swiper-pagination' },
+  autoplay: {
+    delay: 3000, // Ganti sesuai kecepatan yang diinginkan (dalam ms)
+    disableOnInteraction: false, // Tetap autoplay meskipun user klik-klik
+  },
+  loop: true, // Biar muter terus
+});
+      });
+      grid.appendChild(card);
+    });
+
+    document.getElementById('closeModal').addEventListener('click', () => {
+      modal.classList.remove('active');
+    });
+  </script>
+  <script>
+    const cart = [];
+
+    document.getElementById('cartButton').addEventListener('click', () => {
+      document.getElementById('cartModal').classList.add('active');
+      renderCart();
+    });
+
+    document.getElementById('addToCartBtn').addEventListener('click', () => {
+      const name = document.getElementById('modal-title').textContent;
+      const price = document.getElementById('modal-desc').textContent.match(/Rp\s?\d+(\.\d+)?/g)?.[0] || "Rp 60.000";
+      cart.push({ name, price });
+      updateCartBadge();
+      alert("Produk ditambahkan ke keranjang!");
+    });
+
+    function renderCart() {
+      const list = document.getElementById('cart-items');
+      list.innerHTML = '';
+      cart.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${item.name} - ${item.price}`;
+        list.appendChild(li);
+      });
+    }
+
+    function updateCartBadge() {
+      document.getElementById('cart-count').textContent = cart.length;
+    }
+
+    function checkout() {
+      if (cart.length === 0) {
+        alert("Keranjang kosong, tambah dulu yaa 😅");
+      } else {
+        alert("Checkout berhasil! Terima kasih belanjanya 💕");
+        cart.length = 0;
+        renderCart();
+        updateCartBadge();
+        document.getElementById('cartModal').classList.remove('active');
+      }
+    }
+  </script>
+
+</body>
+</body>
+</html>
